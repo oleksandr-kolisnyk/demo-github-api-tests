@@ -1,3 +1,5 @@
+import pytest
+
 from configs import MAIN_BRANCH
 from services.github_service import GitHubRestApi
 from utils.faker import random_str
@@ -70,3 +72,12 @@ def test_update_pr_wrong_state(user_data, repository, open_pull_request):
                                          random_str())
     assert res.status_code == 200
     assert res.json()["state"] == "open"
+
+
+@pytest.mark.skip("TODO: currently failing because of 'cannot review own pull request' validation")
+def test_approve_pull_request(user_data, repository, open_pull_request):
+    gh_service = GitHubRestApi()
+
+    result = "APPROVE"
+    res = gh_service.create_pr_review(user_data["login"], repository["name"], open_pull_request["number"], result)
+    assert res.status_code == 200

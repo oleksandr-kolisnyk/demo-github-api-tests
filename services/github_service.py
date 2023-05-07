@@ -84,6 +84,10 @@ class GitHubRestApi:
         url = f"/repos/{owner}/{repo_name}/pulls/{pr_number}"
         return self._make_patch(url, body)
 
+    def create_pr_review(self, owner, repo_name, pr_number, resolution):
+        body = {"event": resolution}
+        url = f"/repos/{owner}/{repo_name}/pulls/{pr_number}/reviews"
+        return self._make_post(url, body)
 
 class GitHubRestApiGuest(GitHubRestApi):
 
