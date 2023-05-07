@@ -41,8 +41,8 @@ class GitHubRestApi:
     def get_user_data(self):
         return self._make_get("user")
 
-    def create_repository(self, name, description, has_issues):
-        body = {"name": name, "description": description, "has_issues": has_issues}
+    def create_repository(self, name, description, has_issues, auto_init=False):
+        body = {"name": name, "description": description, "has_issues": has_issues, "auto_init": auto_init}
         return self._make_post("/user/repos", body)
 
     def delete_repository(self, owner, repo_name):
@@ -50,6 +50,14 @@ class GitHubRestApi:
 
     def list_repositories(self):
         return self._make_get("user/repos")
+
+    def list_branches(self, owner, repo_name):
+        return self._make_get(f"/repos/{owner}/{repo_name}/branches")
+
+    def create_reference(self, owner, repo_name, ref_name, sha1_value):
+        body = {"ref": ref_name, "sha": sha1_value}
+        url = f"/repos/{owner}/{repo_name}/git/refs"
+        return self._make_post(url, body)
 
 
 class GitHubRestApiGuest(GitHubRestApi):
