@@ -48,3 +48,28 @@ def test_delete_non_existing_repo(user_data):
     res = gh_service.delete_repository(user_data["login"], random_str(15))
 
     assert res.status_code == 404
+
+
+@pytest.fixture()
+def repo_data(user_data):
+    data = {"name": random_str(), "description": None, "has_issues": False}
+    yield data
+    gh_service = GitHubRestApi()
+    res = gh_service.delete_repository(user_data["login"], data["name"])
+    assert res.status_code == 204
+
+
+def test_create_repository(repo_data):
+    gh_service = GitHubRestApi()
+    res = gh_service.create_repository(**repo_data)
+    assert res.status_code == 201
+    res = res.json()
+    assert res["name"] == repo_data["name"]
+    assert res["description"] == repo_data["description"]
+    assert res["has_issues"] == repo_data["has_issues"]
+
+
+def test_create_repo_empty_name():
+    gh_service = GitHubRestApi()
+    res = gh_service.create_repository("", random_str(), True)
+    assert res.status_code == 422
