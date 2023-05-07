@@ -35,6 +35,12 @@ class GitHubRestApi:
     def _make_post(self, url, body):
         return self._make_request(requests.post, url, body)
 
+    def _make_put(self, url, body):
+        return self._make_request(requests.put, url, body)
+
+    def _make_patch(self, url, body):
+        return self._make_request(requests.patch, url, body)
+
     def _make_delete(self, url):
         return self._make_request(requests.delete, url)
 
@@ -58,6 +64,25 @@ class GitHubRestApi:
         body = {"ref": ref_name, "sha": sha1_value}
         url = f"/repos/{owner}/{repo_name}/git/refs"
         return self._make_post(url, body)
+
+    def create_content(self, owner, repo_name, file_path, message, content, branch):
+        body = {"message": message, "content": content, "branch": branch}
+        url = f"/repos/{owner}/{repo_name}/contents/{file_path}"
+        return self._make_put(url, body)
+
+    def create_pull_request(self, owner, repo_name, head, base, title=None):
+        body = {"head": head, "base": base, "title": title}
+        url = f"/repos/{owner}/{repo_name}/pulls"
+        return self._make_post(url, body)
+
+    def list_pull_requests(self, owner, repo_name):
+        url = f"/repos/{owner}/{repo_name}/pulls"
+        return self._make_get(url)
+
+    def update_pull_request(self, owner, repo_name, pr_number, state):
+        body = {"state": state}
+        url = f"/repos/{owner}/{repo_name}/pulls/{pr_number}"
+        return self._make_patch(url, body)
 
 
 class GitHubRestApiGuest(GitHubRestApi):
